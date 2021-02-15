@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--配置要链接的数据库的数据源-->
+    <classPathEntry
+            location="D:\jdbc驱动\mysql-connector-java-8.0.15\mysql-connector-java-8.0.15/mysql-connector-java-8.0.15.jar"/>
+    <!---Mybatis上下文-->
+    <context id="MySqlContext" targetRuntime="MyBatis3" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <commentGenerator>
+            <!--去除注释-->
+            <property name="suppressAllComments" value="true"/>
+            <!--注释中去除日期注释-->
+            <property name="suppressDate" value="true"/>
+            <!--注释中添加数据库字段备注注释-->
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+
+        <!--配置数据库的链接信息-->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/course_center"
+                        userId="root"
+                        password="123456">
+            <!--MySQL 8.x 需要指定服务器的时区-->
+            <property name="serverTimezone" value="Asia/Shanghai"/>
+            <!--MySQL 不支持 schema 或者 catalog 所以需要添加这个-->
+            <!--参考 : http://www.mybatis.org/generator/usage/mysql.html-->
+            <property name="nullCatalogMeansCurrent" value="true"/>
+            <!-- MySQL8默认启用 SSL ,不关闭会有警告-->
+            <property name="useSSL" value="false"/>
+        </jdbcConnection>
+
+        <!--为 true时把JDBC DECIMAL 和 NUMERIC 类型解析为java.math.BigDecimal-->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!--实体类生成信息-->
+        <javaModelGenerator targetPackage="top.nanzx.entity" targetProject="src/main/java">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false"/>
+            <!-- 从数据库返回的值被清理前后的空格 -->
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- targetProject:mapper映射文件生成的位置 -->
+<!--        <sqlMapGenerator targetPackage="top.nanzx.mapper" targetProject="src\main\resources">-->
+<!--            &lt;!&ndash; enableSubPackages:是否让schema作为包的后缀 &ndash;&gt;-->
+<!--            <property name="enableSubPackages" value="false"/>-->
+<!--            <property name="trimStrings" value="true"/>-->
+<!--        </sqlMapGenerator>-->
+
+        <!-- targetPackage：mapper接口生成的位置 -->
+<!--        <javaClientGenerator type="XMLMAPPER" targetPackage="top.nanzx.dao" targetProject="src\main\java">-->
+<!--            &lt;!&ndash; enableSubPackages:是否让schema作为包的后缀 &ndash;&gt;-->
+<!--            <property name="enableSubPackages" value="false"/>-->
+<!--        </javaClientGenerator>-->
+
+        <!--要生成的表结构-->
+        <table tableName="student" domainObjectName="Student"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+        <table tableName="teacher" domainObjectName="Teacher"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+        <table tableName="admin" domainObjectName="Admin"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+        <table tableName="course" domainObjectName="Course"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+        <table tableName="note" domainObjectName="Note"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+        <table tableName="means" domainObjectName="Means"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+    </context>
+
+</generatorConfiguration>

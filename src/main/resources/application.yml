@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/course_center?serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
+
+    druid:
+      aop-patterns: top.nanzx.*  #监控SpringBean
+      filters: stat,wall     # 底层开启功能，stat（sql监控），wall（防火墙）
+      stat-view-servlet:   # 配置监控页功能
+        enabled: true
+        login-username: nanzx
+        login-password: 123456
+        resetEnable: false
+      web-stat-filter:  # 监控web
+        enabled: true
+        urlPattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+      filter: # 对上面filters里面的stat的详细配置
+        stat:
+          slow-sql-millis: 1000
+          logSlowSql: true
+          enabled: true
+        wall:
+          enabled: true
+          config:
+            drop-table-allow: false
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+
+server:
+  port: 8181
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    top.nanzx.dao: debug
+
+multipartFile:
+  path: C:\\Users\Administrator\\Desktop
