@@ -1,5 +1,7 @@
 package top.nanzx.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class Course {
@@ -11,6 +13,7 @@ public class Course {
 
     private Teacher teacher;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date createTime;
 
     private Integer activity;
@@ -47,7 +50,7 @@ public class Course {
         return teacher;
     }
 
-    public void setTeacherNo(Teacher teacher) {
+    public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
 

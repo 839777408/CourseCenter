@@ -2,12 +2,14 @@ package top.nanzx.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.nanzx.dao.CommonDao;
+import top.nanzx.dao.CourseDao;
+import top.nanzx.dao.DtoDao;
 import top.nanzx.dto.JsonResult;
 import top.nanzx.entity.Course;
-import top.nanzx.entity.ShowCourse;
+import top.nanzx.dto.ShowCourse;
 import top.nanzx.service.CommonService;
 import top.nanzx.service.StudentService;
+import top.nanzx.service.TeacherService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,11 @@ public class CommonServiceImpl implements CommonService {
     @Autowired
     private StudentService studentService;
     @Autowired
-    private CommonDao commonDao;
+    private TeacherService teacherService;
+    @Autowired
+    private CourseDao courseDao;
+    @Autowired
+    private DtoDao dtoDao;
 
 
     /**
@@ -41,7 +47,7 @@ public class CommonServiceImpl implements CommonService {
         if ("student".equals(type)) {
             return studentService.validateLogon(no, password);
         } else if ("teacher".equals(type)) {
-            return null;
+            return teacherService.validateLogon(no, password);
         } else if ("admin".equals(type)) {
             return null;
         } else {
@@ -58,7 +64,7 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public JsonResult showCourse(String type) {
-        List<ShowCourse> courses = commonDao.showCourse(type);
+        List<ShowCourse> courses = dtoDao.showCourse(type);
         if (courses != null) {
             return new JsonResult(0, "首页展示课程获取成功！", courses);
         } else {
@@ -75,7 +81,7 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public JsonResult rankCourse() {
-        List<Course> courses = commonDao.rankCourse();
+        List<Course> courses = courseDao.rankCourse();
         if (courses != null) {
             return new JsonResult(0, "首页课程排行榜获取成功！", courses);
         } else {

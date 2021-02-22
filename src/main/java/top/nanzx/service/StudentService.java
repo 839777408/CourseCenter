@@ -10,4 +10,6 @@ import top.nanzx.dto.JsonResult;
 public interface StudentService {
 
     JsonResult validateLogon(String no, String password);
+
+    JsonResult getCourses(String no);
 }
