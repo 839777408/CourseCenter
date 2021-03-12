@@ -1,5 +1,8 @@
 package top.nanzx.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Means {
@@ -9,11 +12,10 @@ public class Means {
 
     private Course course;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date uploadTime;
 
-    private String filePath;
-
-    private Double size;
+    private BigDecimal size;
 
     public Integer getId() {
         return id;
@@ -47,19 +49,11 @@ public class Means {
         this.uploadTime = uploadTime;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath == null ? null : filePath.trim();
-    }
-
-    public Double getSize() {
+    public BigDecimal getSize() {
         return size;
     }
 
-    public void setSize(Double size) {
+    public void setSize(BigDecimal size) {
         this.size = size;
     }
 }

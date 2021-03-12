@@ -25,6 +25,12 @@ public interface DtoDao {
     })
     List<SelectCourse> getCoursesBySquad(String squad);
 
+    @Select("SELECT squad FROM select_course WHERE course_id = #{courseId}")
+    List<String> getSquadsByCourse(int courseId);
+
     @Insert("INSERT INTO select_course(course_id, squad) VALUES (#{courseId},#{squad})")
     Boolean createSelectCourse(@Param("courseId") int courseId, @Param("squad") String squad);
+
+    @Delete("DELETE  FROM select_course WHERE course_id = #{courseId}")
+    Boolean delSelectCourse(@Param("courseId") int courseId);
 }

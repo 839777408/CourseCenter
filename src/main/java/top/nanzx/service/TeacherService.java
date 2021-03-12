@@ -16,9 +16,15 @@ public interface TeacherService {
 
     JsonResult validateLogon(String no, String password);
 
-    JsonResult upload(MultipartFile file,int courseId);
+    JsonResult upload(MultipartFile file, int courseId);
+
+    JsonResult delMain(String courseId, String fileName);
 
     JsonResult getCourses(String no);
 
     JsonResult getAllClasses();
+
+    JsonResult delCourse(String id);
+
+    JsonResult updateCourse(HashMap<String, String> map);
 }

@@ -6,12 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import top.nanzx.dao.*;
 import top.nanzx.dto.JsonResult;
+import top.nanzx.dto.SelectCourse;
 import top.nanzx.entity.Course;
 import top.nanzx.entity.Means;
 import top.nanzx.entity.Teacher;
 import top.nanzx.service.TeacherService;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +38,7 @@ public class TeacherServiceImpl implements TeacherService {
     private DtoDao dtoDao;
     @Autowired
     private MeansDao meansDao;
-    @Value("spring.multipartFile.path")
+    @Value("${multipartFile.path}")
     private String filePath;
 
 
@@ -121,7 +124,7 @@ public class TeacherServiceImpl implements TeacherService {
             return new JsonResult(1, "该课程下已有重复文件名！", null);
         }
 
-        File dest = new File(filePath + originalFilename);
+        File dest = new File(filePath + '\\' + courseId + '\\' + originalFilename);
         if (!dest.getParentFile().exists()) {
             boolean mkdirs = dest.getParentFile().mkdirs();
             if (!mkdirs) {
@@ -130,11 +133,44 @@ public class TeacherServiceImpl implements TeacherService {
         }
         try {
             file.transferTo(dest);
+            means = new Means();
+            Course course = new Course();
+            course.setId(courseId);
+
+            means.setCourse(course);
+            means.setFileName(originalFilename);
+            means.setUploadTime(new Date());
+            //单位是MB
+            means.setSize(new BigDecimal(file.getSize()).divide(new BigDecimal("1048576"), 2, BigDecimal.ROUND_HALF_UP));
+
+            meansDao.addFile(means);
         } catch (Exception e) {
             e.printStackTrace();
             return new JsonResult(1, "文件上传失败。", null);
         }
         return new JsonResult(0, "文件上传成功！", null);
+    }
+
+    /**
+     * @Author: Nan
+     * @Param: [courseId, fileName]
+     * @Return: top.nanzx.dto.JsonResult
+     * @Date: 12:55 2021/3/7
+     * @Description: 删除学习资料的文件
+     */
+    @Override
+    public JsonResult delMain(String courseId, String fileName) {
+        File file = new File(filePath + '\\' + courseId + '\\' + fileName);
+        if (file.isFile() && file.exists()) {
+            boolean delete = file.delete();
+            if (delete) {
+                meansDao.delFile(Integer.parseInt(courseId), fileName);
+                return new JsonResult(0, "文件删除成功。", null);
+            } else {
+                return new JsonResult(1, "文件删除失败。", null);
+            }
+        }
+        return new JsonResult(1, "文件删除失败。", null);
     }
 
     /**
@@ -146,8 +182,27 @@ public class TeacherServiceImpl implements TeacherService {
      */
     @Override
     public JsonResult getCourses(String no) {
+        List<SelectCourse> list = new ArrayList<>();
+
         List<Course> courses = courseDao.getCoursesByTeacherNo(no);
-        return new JsonResult(0, "", courses);
+        for (Course course : courses) {
+            SelectCourse selectCourse = new SelectCourse();
+            selectCourse.setCourse(course);
+
+            List<String> squadsList = dtoDao.getSquadsByCourse(course.getId());
+            StringBuilder squads = new StringBuilder();
+            for (int i = 0; i < squadsList.size(); i++) {
+                if (i == squadsList.size() - 1) {
+                    squads.append(squadsList.get(i));
+                } else {
+                    squads.append(squadsList.get(i));
+                    squads.append("，");
+                }
+            }
+            selectCourse.setSquad(squads.toString());
+            list.add(selectCourse);
+        }
+        return new JsonResult(0, "获取课程成功！", list);
     }
 
     /**
@@ -161,5 +216,64 @@ public class TeacherServiceImpl implements TeacherService {
     public JsonResult getAllClasses() {
         List<String> classes = studentDao.getAllClasses();
         return new JsonResult(0, "", classes);
+    }
+
+    /**
+     * @Author: Nan
+     * @Param: [id]
+     * @Return: top.nanzx.dto.JsonResult
+     * @Date: 14:12 2021/2/28
+     * @Description: 删除课程
+     */
+    @Override
+    public JsonResult delCourse(String id) {
+        Boolean flag1 = courseDao.delCourse(Integer.parseInt(id));
+        if (flag1) {
+            Boolean flag2 = dtoDao.delSelectCourse(Integer.parseInt(id));
+            if (flag2) {
+                return new JsonResult(0, "删除课程成功", null);
+            } else {
+                return new JsonResult(1, "删除课程失败", null);
+            }
+        } else {
+            return new JsonResult(1, "删除课程失败", null);
+        }
+    }
+
+    /**
+     * @Author: Nan
+     * @Param: [map]
+     * @Return: top.nanzx.dto.JsonResult
+     * @Date: 23:39 2021/2/28
+     * @Description: 修改课程简介
+     */
+    @Override
+    public JsonResult updateCourse(HashMap<String, String> map) {
+        String courseName = map.get("courseName");
+        String imgUrl = map.get("imgUrl");
+        String notice = map.get("notice");
+        String intro = map.get("intro");
+        String courseId = map.get("courseId");
+
+        Course course = new Course();
+        course.setId(Integer.parseInt(courseId));
+        course.setCourseName(courseName);
+        course.setImgUrl(imgUrl);
+        course.setNotice(notice);
+        course.setIntro(intro);
+
+        Boolean flag1 = courseDao.updateCourse(course);
+
+        if (flag1) {
+            dtoDao.delSelectCourse(course.getId());
+            String classes = map.get("classes");
+            String[] squadList = classes.split(",");
+            for (String squad : squadList) {
+                dtoDao.createSelectCourse(course.getId(), squad);
+            }
+            return new JsonResult(0, "更新课程成功！", null);
+        } else {
+            return new JsonResult(1, "更新课程失败！", null);
+        }
     }
 }

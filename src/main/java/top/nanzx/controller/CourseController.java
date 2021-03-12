@@ -20,6 +20,11 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @GetMapping("/getCourseInfo/{courseId}")
+    public JsonResult getCourseInfo(@PathVariable("courseId") int courseId){
+        return courseService.getCourseInfo(courseId);
+    }
+
     @GetMapping("/getMainsList/{courseId}")
     public JsonResult getMainsList(@PathVariable("courseId") int courseId){
         return courseService.getMainsList(courseId);

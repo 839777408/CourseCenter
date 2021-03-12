@@ -20,7 +20,8 @@ public interface CourseDao {
     @Results({
             @Result(column = "teacher_no", property = "teacher", one = @One(select = "top.nanzx.dao.TeacherDao.getTeacherInfoByNo"))
     })
-    Course getCourseInfoById(String id);
+    @Options(useGeneratedKeys = true, keyProperty = "course.id", keyColumn = "id")
+    Course getCourseInfoById(int id);
 
     @Select("SELECT * FROM course WHERE teacher_no = #{no} ORDER BY create_time DESC")
     @Results({
@@ -33,4 +34,11 @@ public interface CourseDao {
             "#{course.intro},#{course.activity},#{course.notice})")
     @Options(useGeneratedKeys = true, keyProperty = "course.id", keyColumn = "id")
     Boolean createCourse(@Param("course") Course course);
+
+    @Delete("DELETE FROM course WHERE id = #{id}")
+    Boolean delCourse(int id);
+
+    @Update("UPDATE course SET course_name = #{course.courseName}, img_url = #{course.imgUrl}, " +
+            "intro = #{course.intro}, notice = #{course.notice} WHERE id = #{course.id}")
+    Boolean updateCourse(@Param("course") Course course);
 }

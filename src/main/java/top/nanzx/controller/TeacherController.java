@@ -27,7 +27,12 @@ public class TeacherController {
 
     @PostMapping("/upload")
     public JsonResult upload(@RequestParam("file") MultipartFile file, @RequestParam("courseId") int courseId) {
-        return null;
+        return teacherService.upload(file, courseId);
+    }
+
+    @DeleteMapping("/delMain")
+    public JsonResult delMain(@RequestParam("courseId") String courseId, @RequestParam("fileName") String fileName) {
+        return teacherService.delMain(courseId, fileName);
     }
 
     @GetMapping("/getCourses")
@@ -38,5 +43,15 @@ public class TeacherController {
     @GetMapping("/getAllClasses")
     public JsonResult getAllClasses() {
         return teacherService.getAllClasses();
+    }
+
+    @DeleteMapping("/delCourse/{id}")
+    public JsonResult delCourse(@PathVariable("id") String id) {
+        return teacherService.delCourse(id);
+    }
+
+    @PostMapping("/updateCourse")
+    public JsonResult updateCourse(@RequestBody HashMap<String, String> map) {
+        return teacherService.updateCourse(map);
     }
 }

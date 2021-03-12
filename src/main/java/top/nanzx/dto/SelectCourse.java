@@ -8,7 +8,7 @@ import top.nanzx.entity.Course;
 /**
  * @Author: Nan
  * @Date: Created in 23:12 2021/2/17
- * @Description: 封装学生所学的所有课程
+ * @Description: 封装班级和所修课程，多对多。
  */
 @Data
 @AllArgsConstructor

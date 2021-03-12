@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletResponse;
  * @Description:
  */
 public interface CourseService {
+
+    JsonResult getCourseInfo(int courseId);
+
     JsonResult getMainsList(int courseId);
 
     JsonResult download(int courseId, String fileName, HttpServletResponse response) throws Exception;

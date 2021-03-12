@@ -1,9 +1,14 @@
 package top.nanzx.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import top.nanzx.dao.CourseDao;
+import top.nanzx.dao.DtoDao;
 import top.nanzx.dao.MeansDao;
 import top.nanzx.dto.JsonResult;
+import top.nanzx.dto.SelectCourse;
+import top.nanzx.entity.Course;
 import top.nanzx.entity.Means;
 import top.nanzx.service.CourseService;
 
@@ -25,8 +30,42 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     @Autowired
     private MeansDao meansDao;
-//    @Value("spring.servlet.multipart.max-file-size")
+    @Autowired
+    private CourseDao courseDao;
+    @Autowired
+    private DtoDao dtoDao;
+    //    @Value("spring.servlet.multipart.max-file-size")
 //    private String size;
+    @Value("${multipartFile.path}")
+    private String filePath;
+
+    /**
+     * @Author: Nan
+     * @Param: [courseId]
+     * @Return: top.nanzx.dto.JsonResult
+     * @Date: 15:39 2021/2/27
+     * @Description: 获取课程简介
+     */
+    @Override
+    public JsonResult getCourseInfo(int courseId) {
+        Course course = courseDao.getCourseInfoById(courseId);
+
+        SelectCourse selectCourse = new SelectCourse();
+        selectCourse.setCourse(course);
+
+        List<String> squadsList = dtoDao.getSquadsByCourse(course.getId());
+        StringBuilder squads = new StringBuilder();
+        for (int i = 0; i < squadsList.size(); i++) {
+            if (i == squadsList.size() - 1) {
+                squads.append(squadsList.get(i));
+            } else {
+                squads.append(squadsList.get(i));
+                squads.append("，");
+            }
+        }
+        selectCourse.setSquad(squads.toString());
+        return new JsonResult(0, "获取课程简介成功！", selectCourse);
+    }
 
     /**
      * @Author: Nan
@@ -51,14 +90,13 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public JsonResult download(int courseId, String fileName, HttpServletResponse response) {
         Means means = meansDao.queryFile(fileName, courseId);
-        File file = new File(means.getFilePath() +'\\'+ means.getFileName());
-        System.out.println(file.length());
+        File file = new File(filePath + '\\' +courseId + '\\' + means.getFileName());
 
         if (!file.exists()) {
             return new JsonResult(1, "文件不存在！", null);
         }
         response.setContentType("application/force-download");
-        response.addHeader("Content-Disposition", "attachment;fileName=" +  new String(fileName.getBytes(StandardCharsets.UTF_8), Charset.forName("ISO8859-1")));
+        response.addHeader("Content-Disposition", "attachment;fileName=" + new String(fileName.getBytes(StandardCharsets.UTF_8), Charset.forName("ISO8859-1")));
 
         byte[] buffer = new byte[1024];
         try {

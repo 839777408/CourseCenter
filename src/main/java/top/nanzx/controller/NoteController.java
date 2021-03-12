@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * @Author: Nan
  * @Date: Created in 22:43 2021/2/4
- * @Description: 未做权限验证
+ * @Description: 未做权限验证,id应该为int类型
  */
 @RestController
 public class NoteController {
