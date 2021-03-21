@@ -48,8 +48,6 @@ public class CommonServiceImpl implements CommonService {
             return studentService.validateLogon(no, password);
         } else if ("teacher".equals(type)) {
             return teacherService.validateLogon(no, password);
-        } else if ("admin".equals(type)) {
-            return null;
         } else {
             return new JsonResult(1, "类型输入有误！", null);
         }
