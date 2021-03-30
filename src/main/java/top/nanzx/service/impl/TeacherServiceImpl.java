@@ -10,6 +10,7 @@ import top.nanzx.dto.SelectCourse;
 import top.nanzx.entity.Course;
 import top.nanzx.entity.Means;
 import top.nanzx.entity.Teacher;
+import top.nanzx.entity.Video;
 import top.nanzx.service.TeacherService;
 
 import java.io.File;
@@ -37,39 +38,26 @@ public class TeacherServiceImpl implements TeacherService {
     @Autowired
     private DtoDao dtoDao;
     @Autowired
-    private MeansDao meansDao;
+    private FileDao fileDao;
     @Value("${multipartFile.path}")
     private String filePath;
 
-
-    /**
-     * @Author: Nan
-     * @Param: [no, password]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 15:18 2021/2/15
-     * @Description: 老师登录验证
-     */
     @Override
-    public JsonResult validateLogon(String no, String password) {
+    public JsonResult validateLogon(HashMap<String, String> map) {
+        String no = map.get("username");
+        String password = map.get("password");
         Teacher teacher = teacherDao.validateLogon(no, password);
         if (teacher == null) {
             return new JsonResult(1, "登录失败，请检查工号和密码是否输入有误！", null);
         } else {
-            ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
-            map.put("no", teacher.getNo());
-            map.put("name", teacher.getName());
-            map.put("squad", "");
-            return new JsonResult(0, "登录成功！", map);
+            ConcurrentHashMap<String, String> returnMap = new ConcurrentHashMap<>();
+            returnMap.put("no", teacher.getNo());
+            returnMap.put("name", teacher.getName());
+            returnMap.put("squad", "");
+            return new JsonResult(0, "登录成功！", returnMap);
         }
     }
 
-    /**
-     * @Author: Nan
-     * @Param: [map]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 20:57 2021/2/22
-     * @Description: 创建课程，未进行事务管理
-     */
     @Override
     public JsonResult createCourse(HashMap<String, String> map) {
         String courseName = map.get("courseName");
@@ -105,21 +93,14 @@ public class TeacherServiceImpl implements TeacherService {
         }
     }
 
-    /**
-     * @Author: Nan
-     * @Param: [file]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 23:05 2021/2/12
-     * @Description: 文件上传
-     */
     @Override
-    public JsonResult upload(MultipartFile file, int courseId) {
+    public JsonResult uploadFile(MultipartFile file, int courseId) {
         if (file == null || file.isEmpty()) {
             return new JsonResult(1, "未选择需上传的文件", null);
         }
 
         String originalFilename = file.getOriginalFilename();
-        Means means = meansDao.queryFile(originalFilename, courseId);
+        Means means = fileDao.queryMean(originalFilename, courseId);
         if (means != null) {
             return new JsonResult(1, "该课程下已有重复文件名！", null);
         }
@@ -143,7 +124,7 @@ public class TeacherServiceImpl implements TeacherService {
             //单位是MB
             means.setSize(new BigDecimal(file.getSize()).divide(new BigDecimal("1048576"), 2, BigDecimal.ROUND_HALF_UP));
 
-            meansDao.addFile(means);
+            fileDao.addMean(means);
         } catch (Exception e) {
             e.printStackTrace();
             return new JsonResult(1, "文件上传失败。", null);
@@ -151,20 +132,52 @@ public class TeacherServiceImpl implements TeacherService {
         return new JsonResult(0, "文件上传成功！", null);
     }
 
-    /**
-     * @Author: Nan
-     * @Param: [courseId, fileName]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 12:55 2021/3/7
-     * @Description: 删除学习资料的文件
-     */
+    @Override
+    public JsonResult uploadVideo(MultipartFile file, int courseId) {
+        if (file == null || file.isEmpty()) {
+            return new JsonResult(1, "未选择需上传的文件", null);
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        Video video = fileDao.queryVideo(originalFilename, courseId);
+        if (video != null) {
+            return new JsonResult(1, "该课程下已有重复文件名！", null);
+        }
+
+        File dest = new File(filePath + '\\' + courseId + '\\' + '\\' + "video" + '\\' + originalFilename);
+        if (!dest.getParentFile().exists()) {
+            boolean mkdirs = dest.getParentFile().mkdirs();
+            if (!mkdirs) {
+                return new JsonResult(1, "文件路径异常，请联系管理员。", null);
+            }
+        }
+        try {
+            file.transferTo(dest);
+            video = new Video();
+            Course course = new Course();
+            course.setId(courseId);
+
+            video.setCourse(course);
+            video.setFileName(originalFilename);
+            video.setUploadTime(new Date());
+            //单位是位
+            video.setSize((int) file.getSize());
+
+            fileDao.addVideo(video);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new JsonResult(1, "文件上传失败。", null);
+        }
+        return new JsonResult(0, "文件上传成功！", null);
+    }
+
     @Override
     public JsonResult delMain(String courseId, String fileName) {
         File file = new File(filePath + '\\' + courseId + '\\' + fileName);
         if (file.isFile() && file.exists()) {
             boolean delete = file.delete();
             if (delete) {
-                meansDao.delFile(Integer.parseInt(courseId), fileName);
+                fileDao.delMean(Integer.parseInt(courseId), fileName);
                 return new JsonResult(0, "文件删除成功。", null);
             } else {
                 return new JsonResult(1, "文件删除失败。", null);
@@ -173,13 +186,6 @@ public class TeacherServiceImpl implements TeacherService {
         return new JsonResult(1, "文件删除失败。", null);
     }
 
-    /**
-     * @Author: Nan
-     * @Param: [no]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 9:46 2021/2/16
-     * @Description: 获取该老师管理的所有课程
-     */
     @Override
     public JsonResult getCourses(String no) {
         List<SelectCourse> list = new ArrayList<>();
@@ -205,26 +211,12 @@ public class TeacherServiceImpl implements TeacherService {
         return new JsonResult(0, "获取课程成功！", list);
     }
 
-    /**
-     * @Author: Nan
-     * @Param: []
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 22:05 2021/2/19
-     * @Description: 获取学校的所有班级
-     */
     @Override
     public JsonResult getAllClasses() {
         List<String> classes = studentDao.getAllClasses();
         return new JsonResult(0, "", classes);
     }
 
-    /**
-     * @Author: Nan
-     * @Param: [id]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 14:12 2021/2/28
-     * @Description: 删除课程
-     */
     @Override
     public JsonResult delCourse(String id) {
         Boolean flag1 = courseDao.delCourse(Integer.parseInt(id));
@@ -240,13 +232,6 @@ public class TeacherServiceImpl implements TeacherService {
         }
     }
 
-    /**
-     * @Author: Nan
-     * @Param: [map]
-     * @Return: top.nanzx.dto.JsonResult
-     * @Date: 23:39 2021/2/28
-     * @Description: 修改课程简介
-     */
     @Override
     public JsonResult updateCourse(HashMap<String, String> map) {
         String courseName = map.get("courseName");
@@ -275,5 +260,20 @@ public class TeacherServiceImpl implements TeacherService {
         } else {
             return new JsonResult(1, "更新课程失败！", null);
         }
+    }
+
+    @Override
+    public JsonResult delVideo(String courseId, String fileName) {
+        File file = new File(filePath + '\\' + courseId + '\\' + "video" + '\\' + fileName);
+        if (file.isFile() && file.exists()) {
+            boolean delete = file.delete();
+            if (delete) {
+                fileDao.delVideo(Integer.parseInt(courseId), fileName);
+                return new JsonResult(0, "文件删除成功。", null);
+            } else {
+                return new JsonResult(1, "文件删除失败。", null);
+            }
+        }
+        return new JsonResult(1, "文件删除失败。", null);
     }
 }

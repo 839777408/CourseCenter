@@ -42,7 +42,7 @@ public class DirectoryServiceImpl implements DirectoryService {
      * @Param: [courseId, map]
      * @Return: top.nanzx.dto.JsonResult
      * @Date: 18:18 2021/3/14
-     * @Description: 添加保存章节目录
+     * @Description: 保存章节目录
      */
     @Override
     public JsonResult addUnits(int courseId, HashMap<String, Object> map) {
@@ -88,7 +88,7 @@ public class DirectoryServiceImpl implements DirectoryService {
      * @Param: [courseId, map]
      * @Return: top.nanzx.dto.JsonResult
      * @Date: 1:59 2021/3/20
-     * @Description:获添加保存课时目录
+     * @Description:添加保存课时目录
      */
     @Override
     public JsonResult addPeriods(int courseId, HashMap<String, Object> map) {

@@ -20,14 +20,19 @@ public class TeacherController {
     @Autowired
     private TeacherService teacherService;
 
+    @PostMapping("/login")
+    public JsonResult login(@RequestBody HashMap<String, String> map) {
+        return teacherService.validateLogon(map);
+    }
+
     @PostMapping("/createCourse")
     public JsonResult createCourse(@RequestBody HashMap<String, String> map) {
         return teacherService.createCourse(map);
     }
 
-    @PostMapping("/upload")
-    public JsonResult upload(@RequestParam("file") MultipartFile file, @RequestParam("courseId") int courseId) {
-        return teacherService.upload(file, courseId);
+    @PostMapping("/uploadFile")
+    public JsonResult uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("courseId") int courseId) {
+        return teacherService.uploadFile(file, courseId);
     }
 
     @DeleteMapping("/delMain")
@@ -53,5 +58,15 @@ public class TeacherController {
     @PostMapping("/updateCourse")
     public JsonResult updateCourse(@RequestBody HashMap<String, String> map) {
         return teacherService.updateCourse(map);
+    }
+
+    @PostMapping("/uploadVideo")
+    public JsonResult uploadVideo(@RequestParam("file") MultipartFile file, @RequestParam("courseId") int courseId) {
+        return teacherService.uploadVideo(file, courseId);
+    }
+
+    @DeleteMapping("/delVideo")
+    public JsonResult delVideo(@RequestParam("courseId") String courseId, @RequestParam("fileName") String fileName) {
+        return teacherService.delVideo(courseId, fileName);
     }
 }

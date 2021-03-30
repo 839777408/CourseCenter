@@ -38,9 +38,9 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 
-logging:
-  level:
-    top.nanzx.dao: debug
+#logging:
+#  level:
+#    top.nanzx.dao: debug
 
 multipartFile:
   path: C:\\Users\Administrator\\Desktop

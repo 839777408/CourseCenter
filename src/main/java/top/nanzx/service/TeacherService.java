@@ -11,12 +11,11 @@ import java.util.HashMap;
  * @Description:
  */
 public interface TeacherService {
+    JsonResult validateLogon(HashMap<String, String> map);
 
     JsonResult createCourse(HashMap<String, String> map);
 
-    JsonResult validateLogon(String no, String password);
-
-    JsonResult upload(MultipartFile file, int courseId);
+    JsonResult uploadFile(MultipartFile file, int courseId);
 
     JsonResult delMain(String courseId, String fileName);
 
@@ -27,4 +26,8 @@ public interface TeacherService {
     JsonResult delCourse(String id);
 
     JsonResult updateCourse(HashMap<String, String> map);
+
+    JsonResult uploadVideo(MultipartFile file, int courseId);
+
+    JsonResult delVideo(String courseId, String fileName);
 }
