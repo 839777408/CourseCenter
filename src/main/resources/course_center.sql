@@ -11,7 +11,7 @@
  Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 21/03/2021 23:42:36
+ Date: 30/03/2021 16:24:31
 */
 
 SET NAMES utf8mb4;
@@ -55,10 +55,10 @@ CREATE TABLE `means`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `file_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `course_id` int(11) NOT NULL,
-  `upload_Time` datetime NOT NULL,
+  `upload_time` datetime NOT NULL,
   `size` double(11, 2) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of means
@@ -70,6 +70,7 @@ INSERT INTO `means` VALUES (12, 'Vue-CLI相关.md', 40, '2021-03-11 20:23:28', 0
 INSERT INTO `means` VALUES (13, 'Git.md', 40, '2021-03-11 20:43:03', 0.01);
 INSERT INTO `means` VALUES (14, 'Mybatis问题解决.md', 40, '2021-03-11 20:44:45', 0.01);
 INSERT INTO `means` VALUES (17, 'Vue的模块化开发.md', 40, '2021-03-11 21:43:52', 0.01);
+INSERT INTO `means` VALUES (18, 'video.mp4', 40, '2021-03-27 19:05:56', 1.00);
 
 -- ----------------------------
 -- Table structure for note
@@ -82,7 +83,7 @@ CREATE TABLE `note`  (
   `create_time` datetime NOT NULL,
   `no` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of note
@@ -111,7 +112,7 @@ CREATE TABLE `period`  (
   `period_id` int(11) NOT NULL,
   `period_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 49 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 51 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of period
@@ -120,6 +121,8 @@ INSERT INTO `period` VALUES (16, 40, 1, 1, '测试');
 INSERT INTO `period` VALUES (17, 40, 1, 2, '德玛西亚');
 INSERT INTO `period` VALUES (18, 40, 1, 3, '大青蛙');
 INSERT INTO `period` VALUES (48, 40, 2, 1, '2');
+INSERT INTO `period` VALUES (49, 40, 4, 1, '个人股');
+INSERT INTO `period` VALUES (50, 40, 4, 2, '为吧');
 
 -- ----------------------------
 -- Table structure for select_course
@@ -239,17 +242,36 @@ CREATE TABLE `unit`  (
   `unit_id` int(11) NOT NULL,
   `unit_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 60 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 70 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of unit
 -- ----------------------------
-INSERT INTO `unit` VALUES (48, 40, 1, 'sql注入');
-INSERT INTO `unit` VALUES (49, 40, 2, '文件上传');
-INSERT INTO `unit` VALUES (50, 40, 3, '解密');
-INSERT INTO `unit` VALUES (51, 40, 4, '仍无法');
-INSERT INTO `unit` VALUES (52, 40, 5, '强无敌驱动器');
 INSERT INTO `unit` VALUES (58, 36, 1, '第一单元');
 INSERT INTO `unit` VALUES (59, 36, 2, '第三单元');
+INSERT INTO `unit` VALUES (67, 40, 1, 'sql注入');
+INSERT INTO `unit` VALUES (68, 40, 2, '文件上传');
+INSERT INTO `unit` VALUES (69, 40, 3, '解密');
+
+-- ----------------------------
+-- Table structure for video
+-- ----------------------------
+DROP TABLE IF EXISTS `video`;
+CREATE TABLE `video`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `file_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `upload_time` datetime NOT NULL,
+  `size` double NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of video
+-- ----------------------------
+INSERT INTO `video` VALUES (4, '火影忍者疾风传NCOP1-18 NCED1-36 合集 - 6.Naruto Shippuuden-NCOP06(Av3687091,P6)_batch.mp4', 40, '2021-03-28 23:36:24', 11640232);
+INSERT INTO `video` VALUES (5, '火影忍者疾风传NCOP1-18 NCED1-36 合集 - 9.Naruto Shippuuden-NCOP09(Av3687091,P9)_batch.mp4', 40, '2021-03-28 23:49:11', 12205358);
+INSERT INTO `video` VALUES (6, '(Attack on Titan) Erwin Smith  The Last Stand.mp4', 40, '2021-03-28 23:55:04', 117293912);
+INSERT INTO `video` VALUES (7, '[Haretahoo.sub&Cornflower.studio][12][evangelion： Another Impact（Confidential）][720P].mp4', 40, '2021-03-28 23:56:32', 97922490);
 
 SET FOREIGN_KEY_CHECKS = 1;
